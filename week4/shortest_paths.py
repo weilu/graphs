@@ -1,29 +1,41 @@
 #Uses python3
 
 import sys
-import queue
+from queue import Queue
+
+def _both_neg_infinity_and_negative_dist(dist_v, dist_w, edge):
+    return dist_v == sys.maxsize and dist_w == sys.maxsize and edge < 0
 
 def explore(adj, cost, dist):
     updated = set()
     for v in range(0, len(adj)):
         for i, w in enumerate(adj[v]):
             new_dist = cost[v][i] + dist[v]
-            if dist[w] > new_dist:
+            if dist[w] > new_dist and not _both_neg_infinity_and_negative_dist(distance[v], distance[w], cost[v][i]):
                 dist[w] = new_dist
                 updated.add(w)
     return updated
 
 def shortet_paths(adj, cost, s, distance, reachable, shortest):
+    # do Bellman-Ford v-1 times
     distance[s] = 0
     for i in range(0, len(adj)-1):
         if not explore(adj, cost, distance):
-            break
+            return # no negative cycle detected early
+
+    # do Bellman-Ford vth times & find nodes forming a negative cycles
     updated = explore(adj, cost, distance)
-    print(updated)
     for node_on_neg in updated:
         visited = set()
         dfs(adj, node_on_neg, node_on_neg, visited, shortest)
-        print(shortest)
+
+    # bfs from negative cycles nodes to find all nodes reachable from neg cycle
+    # because they are also -infinite in distance
+    q = Queue()
+    for v, has_shortest in enumerate(shortest):
+        if not has_shortest:
+            q.put(v)
+    bfs(adj, q, shortest)
 
 # returns True when current node is on a cycle
 def dfs(adj, start, curr, visited, shortest):
@@ -31,11 +43,18 @@ def dfs(adj, start, curr, visited, shortest):
         return True
     visited.add(curr)
     for v in adj[curr]:
-        print('v: {} shortest[v]: {}'.format(v, shortest[v]))
         if v == start or v not in visited:
             if dfs(adj, start, v, visited, shortest):
                 shortest[v] = 0
                 return True
+
+def bfs(adj, q, shortest):
+    while not q.empty():
+        cur = q.get()
+        for w in adj[cur]:
+            if shortest[w]:
+                shortest[w] = 0
+                q.put(w)
 
 
 if __name__ == '__main__':
