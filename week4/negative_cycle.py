@@ -2,10 +2,25 @@
 
 import sys
 
+def explore(adj, cost, dist):
+    updated = False
+    for v in range(0, len(adj)):
+        for i, w in enumerate(adj[v]):
+            new_dist = cost[v][i] + dist[v]
+            if dist[w] > new_dist:
+                dist[w] = new_dist
+                updated = True
+    return updated
 
 def negative_cycle(adj, cost):
-    #write your code here
-    return 0
+    dist = [sys.maxsize for _ in range(0, len(adj))]
+    dist[0] = 0
+    has_negative_cycle = True
+    for i in range(0, len(adj)):
+        if not explore(adj, cost, dist):
+            has_negative_cycle = False
+            break
+    return 1 if has_negative_cycle else 0
 
 
 if __name__ == '__main__':
