@@ -3,10 +3,39 @@
 import sys
 import queue
 
+def explore(adj, cost, dist):
+    updated = set()
+    for v in range(0, len(adj)):
+        for i, w in enumerate(adj[v]):
+            new_dist = cost[v][i] + dist[v]
+            if dist[w] > new_dist:
+                dist[w] = new_dist
+                updated.add(w)
+    return updated
 
 def shortet_paths(adj, cost, s, distance, reachable, shortest):
-    #write your code here
-    pass
+    distance[s] = 0
+    for i in range(0, len(adj)-1):
+        if not explore(adj, cost, distance):
+            break
+    updated = explore(adj, cost, distance)
+    print(updated)
+    for node_on_neg in updated:
+        visited = set()
+        dfs(adj, node_on_neg, node_on_neg, visited, shortest)
+        print(shortest)
+
+# returns True when current node is on a cycle
+def dfs(adj, start, curr, visited, shortest):
+    if curr == start and visited: # do not return [] on first iteration
+        return True
+    visited.add(curr)
+    for v in adj[curr]:
+        print('v: {} shortest[v]: {}'.format(v, shortest[v]))
+        if v == start or v not in visited:
+            if dfs(adj, start, v, visited, shortest):
+                shortest[v] = 0
+                return True
 
 
 if __name__ == '__main__':
@@ -23,15 +52,13 @@ if __name__ == '__main__':
         cost[a - 1].append(w)
     s = data[0]
     s -= 1
-    distance = [10**19] * n
+    distance = [sys.maxsize] * n
     reachable = [0] * n
     shortest = [1] * n
     shortet_paths(adj, cost, s, distance, reachable, shortest)
     for x in range(n):
-        if reachable[x] == 0:
-            print('*')
-        elif shortest[x] == 0:
+        if shortest[x] == 0:
             print('-')
         else:
-            print(distance[x])
+            print(distance[x] if distance[x] < sys.maxsize else '*')
 
