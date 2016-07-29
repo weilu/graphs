@@ -4,7 +4,7 @@ import math
 import queue
 
 def get_sorted_edges(x, y):
-    dist = queue.PriorityQueue()
+    dist = []
     for i, j in zip(x, y):
         v1 = (i, j)
         for a, b in zip(x, y):
@@ -12,8 +12,8 @@ def get_sorted_edges(x, y):
             if v1 == v2:
                 continue
             weight = math.sqrt(math.pow(i-a, 2) + math.pow(j-b, 2))
-            dist.put((weight, (v1, v2)))
-    return dist
+            dist.append((weight, (v1, v2)))
+    return sorted(dist, key=lambda e: e[0])
 
 def minimum_distance(x, y):
     sets = {}
@@ -24,8 +24,7 @@ def minimum_distance(x, y):
 
     dist = get_sorted_edges(x, y)
     result = 0.
-    while not dist.empty():
-        weight, (v1, v2) = dist.get()
+    for weight, (v1, v2) in dist:
         if v2 not in sets[v1]:
             result += weight
             union = sets[v1].union(sets[v2])
