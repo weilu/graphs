@@ -9,16 +9,16 @@ def distance(adj, cost, s, t):
     dist[s] = 0
 
     unexplored = queue.PriorityQueue()
-    unexplored.put(s)
+    unexplored.put((dist[s], s))
     explored = set()
     while not unexplored.empty():
-        v = unexplored.get()
+        p, v = unexplored.get()
         if v not in explored:
             for i, w in enumerate(adj[v]):
                 new_dist = cost[v][i] + dist[v]
                 if dist[w] > new_dist:
                     dist[w] = new_dist
-                    unexplored.put(w)
+                    unexplored.put((new_dist, w))
             explored.add(v)
 
     return dist[t] if dist[t] < sys.maxsize else -1
