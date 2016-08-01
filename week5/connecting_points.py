@@ -1,7 +1,6 @@
 #Uses python3
 import sys
 import math
-import queue
 
 def get_sorted_edges(x, y):
     dist = []
